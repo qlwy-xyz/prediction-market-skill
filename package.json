@@ -1,0 +1,25 @@
+{
+  "name": "prediction-market-skill",
+  "version": "1.0.0",
+  "description": "QLWY Prediction Market agent skill — LMSR AMM, creator settlement, Mythic NFT arbitration",
+  "license": "MIT",
+  "keywords": [
+    "prediction-market",
+    "agent-skill",
+    "LMSR",
+    "AMM",
+    "binary-outcome",
+    "blockchain",
+    "BSC"
+  ],
+  "files": [
+    "SKILL.md",
+    "references/",
+    "examples/"
+  ],
+  "devDependencies": {
+    "tsx": "^4.0.0",
+    "viem": "^2.0.0"
+  }
+}
+

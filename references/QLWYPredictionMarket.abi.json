@@ -1,0 +1,1457 @@
+[
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "owner_",
+        "type": "address"
+      },
+      {
+        "internalType": "contract IERC20",
+        "name": "stablecoin_",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "protocolFeeRecipient_",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  },
+  {
+    "inputs": [],
+    "name": "AlreadyResolved",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ArbitrationNotConfigured",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "BelowMinSubsidy",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "DisputePeriodNotOver",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "DisputePeriodOver",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "DurationTooShort",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "EnforcedPause",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ExpectedPause",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "InsufficientPoolLiquidity",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "InsufficientShares",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "InvalidInitialProbability",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "InvalidMetadata",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "InvalidOutcome",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "MarketExpired",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "MarketNotExpired",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "MarketNotFound",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "MarketNotTrading",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NotCreator",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "enum QLWYPredictionMarket.MarketStatus",
+        "name": "expected",
+        "type": "uint8"
+      }
+    ],
+    "name": "NotInPhase",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "NothingToClaim",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "owner",
+        "type": "address"
+      }
+    ],
+    "name": "OwnableInvalidOwner",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      }
+    ],
+    "name": "OwnableUnauthorizedAccount",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "PendingWinningsRemaining",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ReentrancyGuardReentrantCall",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "token",
+        "type": "address"
+      }
+    ],
+    "name": "SafeERC20FailedOperation",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "SubsidySharesRemaining",
+    "type": "error"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint8",
+        "name": "decimals",
+        "type": "uint8"
+      }
+    ],
+    "name": "UnsupportedStablecoinDecimals",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "ZeroShares",
+    "type": "error"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "marketId",
+        "type": "uint256"
+      },
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "arbitrationId",
+        "type": "uint256"
+      }
+    ],
+    "name": "ArbitrationRequested",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "marketId",
+        "type": "uint256"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "creator",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "CreatorFeeClaimed",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "marketId",
+        "type": "uint256"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "creator",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint8",
+        "name": "proposedOutcome",
+        "type": "uint8"
+      }
+    ],
+    "name": "CreatorSettlementProposed",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "marketId",
+        "type": "uint256"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "creator",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "metadataUri",
+        "type": "string"
+      },
+      {
+        "indexed": false,
+        "internalType": "bytes32",
+        "name": "metadataHash",
+        "type": "bytes32"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint48",
+        "name": "expiresAt",
+        "type": "uint48"
+      },
+      {
+        "indexed": false,
+        "internalType": "int256",
+        "name": "b",
+        "type": "int256"
+      }
+    ],
+    "name": "MarketCreated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "marketId",
+        "type": "uint256"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "recipient",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "MarketDustSwept",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "marketId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint8",
+        "name": "outcome",
+        "type": "uint8"
+      }
+    ],
+    "name": "MarketResolved",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "marketId",
+        "type": "uint256"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "disputer",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint8",
+        "name": "disputedOutcome",
+        "type": "uint8"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "arbitrationFee",
+        "type": "uint256"
+      }
+    ],
+    "name": "OutcomeDisputed",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "previousOwner",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "newOwner",
+        "type": "address"
+      }
+    ],
+    "name": "OwnershipTransferred",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      }
+    ],
+    "name": "Paused",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "marketId",
+        "type": "uint256"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "buyer",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint8",
+        "name": "outcome",
+        "type": "uint8"
+      },
+      {
+        "indexed": false,
+        "internalType": "int256",
+        "name": "shares",
+        "type": "int256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "cost",
+        "type": "uint256"
+      }
+    ],
+    "name": "SharesBought",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "marketId",
+        "type": "uint256"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "seller",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint8",
+        "name": "outcome",
+        "type": "uint8"
+      },
+      {
+        "indexed": false,
+        "internalType": "int256",
+        "name": "shares",
+        "type": "int256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "payout",
+        "type": "uint256"
+      }
+    ],
+    "name": "SharesSold",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "marketId",
+        "type": "uint256"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "provider",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "int256",
+        "name": "newB",
+        "type": "int256"
+      }
+    ],
+    "name": "SubsidyAdded",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "marketId",
+        "type": "uint256"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "provider",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "SubsidyClaimed",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      }
+    ],
+    "name": "Unpaused",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "marketId",
+        "type": "uint256"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "payout",
+        "type": "uint256"
+      }
+    ],
+    "name": "WinningsClaimed",
+    "type": "event"
+  },
+  {
+    "inputs": [],
+    "name": "BPS_DENOMINATOR",
+    "outputs": [
+      {
+        "internalType": "uint16",
+        "name": "",
+        "type": "uint16"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "INVALID",
+    "outputs": [
+      {
+        "internalType": "uint8",
+        "name": "",
+        "type": "uint8"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "NO",
+    "outputs": [
+      {
+        "internalType": "uint8",
+        "name": "",
+        "type": "uint8"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "YES",
+    "outputs": [
+      {
+        "internalType": "uint8",
+        "name": "",
+        "type": "uint8"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "marketId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "addSubsidy",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "arbitration",
+    "outputs": [
+      {
+        "internalType": "contract IQLWYPredictionArbitration",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "marketId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint8",
+        "name": "outcome",
+        "type": "uint8"
+      },
+      {
+        "internalType": "int256",
+        "name": "shares",
+        "type": "int256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "maxCost",
+        "type": "uint256"
+      }
+    ],
+    "name": "buy",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "marketId",
+        "type": "uint256"
+      }
+    ],
+    "name": "claimCreatorFee",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "marketId",
+        "type": "uint256"
+      }
+    ],
+    "name": "claimProtocolFees",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "marketId",
+        "type": "uint256"
+      }
+    ],
+    "name": "claimSubsidy",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "marketId",
+        "type": "uint256"
+      }
+    ],
+    "name": "claimWinnings",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "marketId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint8",
+        "name": "outcome",
+        "type": "uint8"
+      },
+      {
+        "internalType": "int256",
+        "name": "shares",
+        "type": "int256"
+      }
+    ],
+    "name": "costToBuy",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "totalCost",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "metadataUri",
+        "type": "string"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "metadataHash",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "uint48",
+        "name": "expiresAt",
+        "type": "uint48"
+      },
+      {
+        "internalType": "uint256",
+        "name": "subsidyAmount",
+        "type": "uint256"
+      }
+    ],
+    "name": "createMarket",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "marketId",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "creatorFeeBps",
+    "outputs": [
+      {
+        "internalType": "uint16",
+        "name": "",
+        "type": "uint16"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "creatorSettlementGracePeriod",
+    "outputs": [
+      {
+        "internalType": "uint48",
+        "name": "",
+        "type": "uint48"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "marketId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint8",
+        "name": "disputedOutcome",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint256",
+        "name": "arbitrationFee",
+        "type": "uint256"
+      }
+    ],
+    "name": "dispute",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "disputePeriod",
+    "outputs": [
+      {
+        "internalType": "uint48",
+        "name": "",
+        "type": "uint48"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "marketId",
+        "type": "uint256"
+      }
+    ],
+    "name": "finalizeAfterDisputePeriod",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "marketId",
+        "type": "uint256"
+      }
+    ],
+    "name": "getPrice",
+    "outputs": [
+      {
+        "internalType": "int256",
+        "name": "yesPrice",
+        "type": "int256"
+      },
+      {
+        "internalType": "int256",
+        "name": "noPrice",
+        "type": "int256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "lpFeeBps",
+    "outputs": [
+      {
+        "internalType": "uint16",
+        "name": "",
+        "type": "uint16"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "markets",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "metadataUri",
+        "type": "string"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "metadataHash",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "address",
+        "name": "creator",
+        "type": "address"
+      },
+      {
+        "internalType": "uint48",
+        "name": "createdAt",
+        "type": "uint48"
+      },
+      {
+        "internalType": "uint48",
+        "name": "expiresAt",
+        "type": "uint48"
+      },
+      {
+        "internalType": "uint48",
+        "name": "lastTradeAt",
+        "type": "uint48"
+      },
+      {
+        "internalType": "int256",
+        "name": "b",
+        "type": "int256"
+      },
+      {
+        "internalType": "int256",
+        "name": "qYes",
+        "type": "int256"
+      },
+      {
+        "internalType": "int256",
+        "name": "qNo",
+        "type": "int256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "subsidyPool",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "totalVolume",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "creatorFeeAccrued",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "protocolFeeAccrued",
+        "type": "uint256"
+      },
+      {
+        "internalType": "enum QLWYPredictionMarket.MarketStatus",
+        "name": "status",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint8",
+        "name": "resolvedOutcome",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint8",
+        "name": "proposedOutcome",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint48",
+        "name": "settledAt",
+        "type": "uint48"
+      },
+      {
+        "internalType": "uint256",
+        "name": "arbitrationId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "pendingWinnings",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "minDuration",
+    "outputs": [
+      {
+        "internalType": "uint48",
+        "name": "",
+        "type": "uint48"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "minSubsidy",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "nextMarketId",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "owner",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "pause",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "paused",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "marketId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint8",
+        "name": "outcome",
+        "type": "uint8"
+      },
+      {
+        "internalType": "int256",
+        "name": "shares",
+        "type": "int256"
+      }
+    ],
+    "name": "payoutForSell",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "netPayout",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      },
+      {
+        "internalType": "uint8",
+        "name": "",
+        "type": "uint8"
+      }
+    ],
+    "name": "positions",
+    "outputs": [
+      {
+        "internalType": "int256",
+        "name": "",
+        "type": "int256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "protocolFeeBps",
+    "outputs": [
+      {
+        "internalType": "uint16",
+        "name": "",
+        "type": "uint16"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "protocolFeeRecipient",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "renounceOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "marketId",
+        "type": "uint256"
+      }
+    ],
+    "name": "resolveFromArbitration",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "marketId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint8",
+        "name": "outcome",
+        "type": "uint8"
+      },
+      {
+        "internalType": "int256",
+        "name": "shares",
+        "type": "int256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "minPayout",
+        "type": "uint256"
+      }
+    ],
+    "name": "sell",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "contract IQLWYPredictionArbitration",
+        "name": "arb_",
+        "type": "address"
+      }
+    ],
+    "name": "setArbitration",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint48",
+        "name": "val",
+        "type": "uint48"
+      }
+    ],
+    "name": "setCreatorSettlementGracePeriod",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint16",
+        "name": "creatorBps",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint16",
+        "name": "protocolBps",
+        "type": "uint16"
+      },
+      {
+        "internalType": "uint16",
+        "name": "lpBps",
+        "type": "uint16"
+      }
+    ],
+    "name": "setFees",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "val",
+        "type": "uint256"
+      }
+    ],
+    "name": "setMinSubsidy",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "val",
+        "type": "address"
+      }
+    ],
+    "name": "setProtocolFeeRecipient",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint48",
+        "name": "dispute_",
+        "type": "uint48"
+      },
+      {
+        "internalType": "uint48",
+        "name": "minDur_",
+        "type": "uint48"
+      }
+    ],
+    "name": "setTimingParams",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "marketId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint8",
+        "name": "outcome",
+        "type": "uint8"
+      }
+    ],
+    "name": "settleMarket",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "stablecoin",
+    "outputs": [
+      {
+        "internalType": "contract IERC20",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "stablecoinDecimals",
+    "outputs": [
+      {
+        "internalType": "uint8",
+        "name": "",
+        "type": "uint8"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "stablecoinToWadFactor",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "name": "subsidyShares",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "marketId",
+        "type": "uint256"
+      }
+    ],
+    "name": "sweepMarketDust",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "totalSubsidyShares",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "newOwner",
+        "type": "address"
+      }
+    ],
+    "name": "transferOwnership",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "unpause",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  }
+]
